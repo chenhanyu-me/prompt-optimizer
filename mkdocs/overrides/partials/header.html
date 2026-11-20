@@ -1,0 +1,102 @@
+{#-
+  Based on Material for MkDocs `partials/header.html`
+-#}
+{% set class = "md-header" %}
+{% set is_en = page and page.url and page.url.startswith("en/") %}
+{% set site_title = "Prompt Optimizer Docs" if is_en else config.site_name %}
+{% set website_label = "Website" if is_en else "官网" %}
+{% set garden_label = "Prompt Library" if is_en else "提示词库" %}
+{% set product_label = "Optimizer" if is_en else "优化器" %}
+{% set sites_label = "Related sites" if is_en else "相关站点" %}
+{% set site_links = [
+  (config.extra.website_url, website_label, "material/home-modern", "subtle"),
+  (config.extra.product_url, product_label, "material/rocket-launch-outline", "primary"),
+  (config.extra.garden_url, garden_label, "material/library-shelves", "subtle"),
+  (config.repo_url, "GitHub", "fontawesome/brands/github", "repo")
+] %}
+{% macro render_site_links(links) %}
+  {% for href, label, icon, tone in links if href %}
+    <a href="{{ href }}" class="md-header__button po-header-link po-header-link--{{ tone }}" target="_blank" rel="noopener">
+      {% include ".icons/" ~ icon ~ ".svg" %}
+      <span class="po-header-link__label">{{ label }}</span>
+    </a>
+  {% endfor %}
+{% endmacro %}
+{% if "navigation.tabs.sticky" in features %}
+  {% set class = class ~ " md-header--shadow md-header--lifted" %}
+{% elif "navigation.tabs" not in features %}
+  {% set class = class ~ " md-header--shadow" %}
+{% endif %}
+<header class="{{ class }}" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">
+    <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ site_title | e }}" class="md-header__button md-logo" aria-label="{{ site_title }}" data-md-component="logo">
+      {% include "partials/logo.html" %}
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      {% set icon = config.theme.icon.menu or "material/menu" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            <span class="po-header-title-full">{{ site_title }}</span>
+            <span class="po-header-title-short">{{ "Docs" if is_en else "文档" }}</span>
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            {% if page.meta and page.meta.title %}
+              {{ page.meta.title }}
+            {% else %}
+              {{ page.title }}
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="po-header-tools">
+    {% if "material/search" in config.plugins %}
+      {% set search = config.plugins["material/search"] | attr("config") %}
+      {% if search.enabled %}
+        <div class="po-header-search">
+          <label class="md-header__button md-icon" for="__search">
+            {% set icon = config.theme.icon.search or "material/magnify" %}
+            {% include ".icons/" ~ icon ~ ".svg" %}
+          </label>
+          {% include "partials/search.html" %}
+        </div>
+      {% endif %}
+    {% endif %}
+    <div class="po-header-jump" aria-label="{{ sites_label }}">
+      {{ render_site_links(site_links) }}
+    </div>
+    <div class="po-header-tail">
+    {% if config.theme.palette %}
+      {% if not config.theme.palette is mapping %}
+        {% include "partials/palette.html" %}
+      {% endif %}
+    {% endif %}
+    {% if config.extra.alternate %}
+      {% include "partials/alternate.html" %}
+    {% endif %}
+    </div>
+    <details class="po-header-sites">
+      <summary class="po-header-sites__toggle" aria-label="{{ sites_label }}" title="{{ sites_label }}">
+        {% include ".icons/material/dots-horizontal.svg" %}
+      </summary>
+      <div class="po-header-sites__links">
+        {{ render_site_links(site_links) }}
+      </div>
+    </details>
+    </div>
+    {% if not config.theme.palette is mapping %}
+      {% include "partials/javascripts/palette.html" %}
+    {% endif %}
+  </nav>
+  {% if "navigation.tabs.sticky" in features %}
+    {% if "navigation.tabs" in features %}
+      {% include "partials/tabs.html" %}
+    {% endif %}
+  {% endif %}
+</header>
